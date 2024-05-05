@@ -6,10 +6,11 @@ import { Layout, Rive } from '@rive-app/canvas'
 
 
 const canvas = ref()
-const rive = ref()
+const inputs = ref()
+let rive
 
 onMounted(() => {
-  rive.value = new Rive({
+  rive = new Rive({
     canvas: canvas!.value,
     src: animation,
     layout: new Layout({
@@ -17,12 +18,14 @@ onMounted(() => {
       alignment: undefined
     }),
     autoplay: true,
-    stateMachines: ["State Machine 1"]
+    stateMachines: ["State Machine 1"],
+    onLoad: (_) => {
+      inputs.value = rive.stateMachineInputs("State Machine 1");
+    }
   })
 })
 
-const inputs = computed(() => rive.value?.stateMachineInputs('State Machine 1'))
-const trigger = (name) => inputs.value?.find(i => i.name === name)?.fire();
+const trigger = (name) => rive.stateMachineInputs("State Machine 1")?.find(i => i.name === name)?.fire();
 
 /*
 https://rive.app/community/doc/state-machines/docxeznG7iiK
@@ -35,7 +38,6 @@ However, if you are going about constructing your own render loop and using low-
 
 <template>
   <div>
-    {{inputs}}
     <button @click="trigger('click')">Let's Rive</button>
     <canvas
             ref="canvas"
